@@ -1,0 +1,9 @@
+scalar Time
+
+type BaseInfo {
+  status: String!
+  createdBy: String!
+  createdTime: Time!
+  updatedTime: Time!
+  updatedBy: String!
+}

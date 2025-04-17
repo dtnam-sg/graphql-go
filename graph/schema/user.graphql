@@ -1,0 +1,68 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  roles: [Role]
+  functions: [Function]
+  baseInfo: BaseInfo
+}
+
+type Users {
+  users: [User!]!
+  total: Int!
+}
+
+input PaginationInput {
+  page: Int = 1
+  size: Int = 10
+  total: Boolean = false
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  roleIds: [String]
+  functionIds: [String]
+}
+
+input InviteUserInput {
+  email: String!
+  fullPermission: Boolean = false
+}
+
+type Query {
+  users(filter: UserFilter, pagination: PaginationInput): Users!
+  user(id: ID!): User
+}
+
+type UserMutationPayload {
+  success: Boolean!
+  message: String
+  user: User
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): UserMutationPayload!
+  updateUser(id: ID!, input: CreateUserInput!): UserMutationPayload!
+  inviteUser(input: InviteUserInput!): Boolean!
+  deleteUser(id: ID!): UserMutationPayload!
+}
+
+# sort
+enum SortDirection {
+  ASC
+  DESC
+}
+
+# filter inputs
+input UserFilter {
+  name: String
+  email: String
+  roleIds: ID
+}
+
+enum UserSortField {
+  NAME
+  EMAIL
+  CREATED_AT
+}

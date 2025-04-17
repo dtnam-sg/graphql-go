@@ -1,0 +1,38 @@
+type Role {
+  id: ID!
+  name: String!
+  description: String
+  baseInfo: BaseInfo
+}
+
+type Function {
+  id: ID!
+  name: String!
+  description: String!
+  baseInfo: BaseInfo
+}
+
+input CreateRoleInput {
+  name: String!
+  description: String!
+}
+
+type RoleMutationPayload {
+  success: Boolean!
+  message: String
+  role: Role
+}
+
+extend type Query {
+  roles(filter: UserFilter, pagination: PaginationInput): [Role!]!
+  role(id: ID!): Role
+
+  functions(filter: UserFilter, pagination: PaginationInput): [Function!]!
+  function(id: ID!): Function
+}
+
+extend type Mutation {
+  createRole(input: CreateRoleInput!): RoleMutationPayload!
+  updateRole(id: ID!, input: CreateRoleInput!): RoleMutationPayload!
+  deleteRole(id: ID!): RoleMutationPayload!
+}
