@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"crypto/rand"
+	"demo-graphql/graph/helper"
 	"demo-graphql/graph/model"
 	"fmt"
 	"log"
@@ -21,7 +22,7 @@ func (r *mutationResolver) CreateRole(ctx context.Context, input model.CreateRol
 		ID:          fmt.Sprintf("T%d", randID),
 		Name:        input.Name,
 		Description: &input.Description,
-		BaseInfo:    NewBaseInfoWithDefault(),
+		BaseInfo:    helper.NewBaseInfoWithDefault(),
 	}
 	r.roles = append(r.roles, role)
 

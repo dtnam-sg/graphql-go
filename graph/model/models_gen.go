@@ -22,6 +22,11 @@ type CreateRoleInput struct {
 	Description string `json:"description"`
 }
 
+type CreateServerInput struct {
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+}
+
 type CreateUserInput struct {
 	Name        string    `json:"name"`
 	Email       string    `json:"email"`
@@ -64,6 +69,34 @@ type RoleMutationPayload struct {
 	Success bool    `json:"success"`
 	Message *string `json:"message,omitempty"`
 	Role    *Role   `json:"role,omitempty"`
+}
+
+type Server struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description,omitempty"`
+	BaseInfo    *BaseInfo `json:"baseInfo,omitempty"`
+}
+
+type ServerFilter struct {
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+}
+
+type ServerInput struct {
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+}
+
+type ServerList struct {
+	Servers []*Server `json:"servers"`
+	Total   int32     `json:"total"`
+}
+
+type ServerMutationPayload struct {
+	Success bool    `json:"success"`
+	Message *string `json:"message,omitempty"`
+	Server  *Server `json:"server,omitempty"`
 }
 
 type User struct {

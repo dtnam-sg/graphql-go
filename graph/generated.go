@@ -64,13 +64,14 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateRole func(childComplexity int, input model.CreateRoleInput) int
-		CreateUser func(childComplexity int, input model.CreateUserInput) int
-		DeleteRole func(childComplexity int, id string) int
-		DeleteUser func(childComplexity int, id string) int
-		InviteUser func(childComplexity int, input model.InviteUserInput) int
-		UpdateRole func(childComplexity int, id string, input model.CreateRoleInput) int
-		UpdateUser func(childComplexity int, id string, input model.CreateUserInput) int
+		CreateRole   func(childComplexity int, input model.CreateRoleInput) int
+		CreateServer func(childComplexity int, input model.CreateServerInput) int
+		CreateUser   func(childComplexity int, input model.CreateUserInput) int
+		DeleteRole   func(childComplexity int, id string) int
+		DeleteUser   func(childComplexity int, id string) int
+		InviteUser   func(childComplexity int, input model.InviteUserInput) int
+		UpdateRole   func(childComplexity int, id string, input model.CreateRoleInput) int
+		UpdateUser   func(childComplexity int, id string, input model.CreateUserInput) int
 	}
 
 	Query struct {
@@ -78,6 +79,8 @@ type ComplexityRoot struct {
 		Functions func(childComplexity int, filter *model.UserFilter, pagination *model.PaginationInput) int
 		Role      func(childComplexity int, id string) int
 		Roles     func(childComplexity int, filter *model.UserFilter, pagination *model.PaginationInput) int
+		Server    func(childComplexity int, id string) int
+		Servers   func(childComplexity int, filter *model.ServerFilter, pagination *model.PaginationInput) int
 		User      func(childComplexity int, id string) int
 		Users     func(childComplexity int, filter *model.UserFilter, pagination *model.PaginationInput) int
 	}
@@ -92,6 +95,24 @@ type ComplexityRoot struct {
 	RoleMutationPayload struct {
 		Message func(childComplexity int) int
 		Role    func(childComplexity int) int
+		Success func(childComplexity int) int
+	}
+
+	Server struct {
+		BaseInfo    func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+	}
+
+	ServerList struct {
+		Servers func(childComplexity int) int
+		Total   func(childComplexity int) int
+	}
+
+	ServerMutationPayload struct {
+		Message func(childComplexity int) int
+		Server  func(childComplexity int) int
 		Success func(childComplexity int) int
 	}
 
@@ -124,6 +145,7 @@ type MutationResolver interface {
 	CreateRole(ctx context.Context, input model.CreateRoleInput) (*model.RoleMutationPayload, error)
 	UpdateRole(ctx context.Context, id string, input model.CreateRoleInput) (*model.RoleMutationPayload, error)
 	DeleteRole(ctx context.Context, id string) (*model.RoleMutationPayload, error)
+	CreateServer(ctx context.Context, input model.CreateServerInput) (*model.ServerMutationPayload, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context, filter *model.UserFilter, pagination *model.PaginationInput) (*model.Users, error)
@@ -132,6 +154,8 @@ type QueryResolver interface {
 	Role(ctx context.Context, id string) (*model.Role, error)
 	Functions(ctx context.Context, filter *model.UserFilter, pagination *model.PaginationInput) ([]*model.Function, error)
 	Function(ctx context.Context, id string) (*model.Function, error)
+	Servers(ctx context.Context, filter *model.ServerFilter, pagination *model.PaginationInput) ([]*model.ServerList, error)
+	Server(ctx context.Context, id string) (*model.Server, error)
 }
 
 type executableSchema struct {
@@ -227,6 +251,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateRole(childComplexity, args["input"].(model.CreateRoleInput)), true
+
+	case "Mutation.createServer":
+		if e.complexity.Mutation.CreateServer == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createServer_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateServer(childComplexity, args["input"].(model.CreateServerInput)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -348,6 +384,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Roles(childComplexity, args["filter"].(*model.UserFilter), args["pagination"].(*model.PaginationInput)), true
 
+	case "Query.server":
+		if e.complexity.Query.Server == nil {
+			break
+		}
+
+		args, err := ec.field_Query_server_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Server(childComplexity, args["id"].(string)), true
+
+	case "Query.servers":
+		if e.complexity.Query.Servers == nil {
+			break
+		}
+
+		args, err := ec.field_Query_servers_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Servers(childComplexity, args["filter"].(*model.ServerFilter), args["pagination"].(*model.PaginationInput)), true
+
 	case "Query.user":
 		if e.complexity.Query.User == nil {
 			break
@@ -420,6 +480,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.RoleMutationPayload.Success(childComplexity), true
+
+	case "Server.baseInfo":
+		if e.complexity.Server.BaseInfo == nil {
+			break
+		}
+
+		return e.complexity.Server.BaseInfo(childComplexity), true
+
+	case "Server.description":
+		if e.complexity.Server.Description == nil {
+			break
+		}
+
+		return e.complexity.Server.Description(childComplexity), true
+
+	case "Server.id":
+		if e.complexity.Server.ID == nil {
+			break
+		}
+
+		return e.complexity.Server.ID(childComplexity), true
+
+	case "Server.name":
+		if e.complexity.Server.Name == nil {
+			break
+		}
+
+		return e.complexity.Server.Name(childComplexity), true
+
+	case "ServerList.servers":
+		if e.complexity.ServerList.Servers == nil {
+			break
+		}
+
+		return e.complexity.ServerList.Servers(childComplexity), true
+
+	case "ServerList.total":
+		if e.complexity.ServerList.Total == nil {
+			break
+		}
+
+		return e.complexity.ServerList.Total(childComplexity), true
+
+	case "ServerMutationPayload.message":
+		if e.complexity.ServerMutationPayload.Message == nil {
+			break
+		}
+
+		return e.complexity.ServerMutationPayload.Message(childComplexity), true
+
+	case "ServerMutationPayload.server":
+		if e.complexity.ServerMutationPayload.Server == nil {
+			break
+		}
+
+		return e.complexity.ServerMutationPayload.Server(childComplexity), true
+
+	case "ServerMutationPayload.success":
+		if e.complexity.ServerMutationPayload.Success == nil {
+			break
+		}
+
+		return e.complexity.ServerMutationPayload.Success(childComplexity), true
 
 	case "User.baseInfo":
 		if e.complexity.User.BaseInfo == nil {
@@ -507,9 +630,12 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateRoleInput,
+		ec.unmarshalInputCreateServerInput,
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputInviteUserInput,
 		ec.unmarshalInputPaginationInput,
+		ec.unmarshalInputServerFilter,
+		ec.unmarshalInputServerInput,
 		ec.unmarshalInputUserFilter,
 	)
 	first := true
@@ -607,7 +733,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema/common.graphql" "schema/role.graphql" "schema/user.graphql"
+//go:embed "schema/common.graphql" "schema/role.graphql" "schema/server.graphql" "schema/user.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -621,6 +747,7 @@ func sourceData(filename string) string {
 var sources = []*ast.Source{
 	{Name: "schema/common.graphql", Input: sourceData("schema/common.graphql"), BuiltIn: false},
 	{Name: "schema/role.graphql", Input: sourceData("schema/role.graphql"), BuiltIn: false},
+	{Name: "schema/server.graphql", Input: sourceData("schema/server.graphql"), BuiltIn: false},
 	{Name: "schema/user.graphql", Input: sourceData("schema/user.graphql"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -649,6 +776,29 @@ func (ec *executionContext) field_Mutation_createRole_argsInput(
 	}
 
 	var zeroVal model.CreateRoleInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_createServer_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_createServer_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_createServer_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.CreateServerInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNCreateServerInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateServerInput(ctx, tmp)
+	}
+
+	var zeroVal model.CreateServerInput
 	return zeroVal, nil
 }
 
@@ -965,6 +1115,70 @@ func (ec *executionContext) field_Query_roles_argsFilter(
 }
 
 func (ec *executionContext) field_Query_roles_argsPagination(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.PaginationInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
+	if tmp, ok := rawArgs["pagination"]; ok {
+		return ec.unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
+	}
+
+	var zeroVal *model.PaginationInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_server_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_server_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_server_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_servers_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_servers_argsFilter(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
+	arg1, err := ec.field_Query_servers_argsPagination(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["pagination"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Query_servers_argsFilter(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*model.ServerFilter, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+	if tmp, ok := rawArgs["filter"]; ok {
+		return ec.unmarshalOServerFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerFilter(ctx, tmp)
+	}
+
+	var zeroVal *model.ServerFilter
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_servers_argsPagination(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (*model.PaginationInput, error) {
@@ -1979,6 +2193,69 @@ func (ec *executionContext) fieldContext_Mutation_deleteRole(ctx context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createServer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createServer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateServer(rctx, fc.Args["input"].(model.CreateServerInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.ServerMutationPayload)
+	fc.Result = res
+	return ec.marshalNServerMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerMutationPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createServer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "success":
+				return ec.fieldContext_ServerMutationPayload_success(ctx, field)
+			case "message":
+				return ec.fieldContext_ServerMutationPayload_message(ctx, field)
+			case "server":
+				return ec.fieldContext_ServerMutationPayload_server(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ServerMutationPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createServer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_users(ctx, field)
 	if err != nil {
@@ -2354,6 +2631,132 @@ func (ec *executionContext) fieldContext_Query_function(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_function_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_servers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_servers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Servers(rctx, fc.Args["filter"].(*model.ServerFilter), fc.Args["pagination"].(*model.PaginationInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ServerList)
+	fc.Result = res
+	return ec.marshalNServerList2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_servers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "servers":
+				return ec.fieldContext_ServerList_servers(ctx, field)
+			case "total":
+				return ec.fieldContext_ServerList_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ServerList", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_servers_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_server(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_server(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Server(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Server)
+	fc.Result = res
+	return ec.marshalNServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_server(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Server_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Server_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Server_description(ctx, field)
+			case "baseInfo":
+				return ec.fieldContext_Server_baseInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Server", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_server_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2804,6 +3207,422 @@ func (ec *executionContext) fieldContext_RoleMutationPayload_role(_ context.Cont
 				return ec.fieldContext_Role_baseInfo(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Role", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Server_id(ctx context.Context, field graphql.CollectedField, obj *model.Server) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Server_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Server_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Server",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Server_name(ctx context.Context, field graphql.CollectedField, obj *model.Server) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Server_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Server_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Server",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Server_description(ctx context.Context, field graphql.CollectedField, obj *model.Server) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Server_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Server_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Server",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Server_baseInfo(ctx context.Context, field graphql.CollectedField, obj *model.Server) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Server_baseInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BaseInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.BaseInfo)
+	fc.Result = res
+	return ec.marshalOBaseInfo2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Server_baseInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Server",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "status":
+				return ec.fieldContext_BaseInfo_status(ctx, field)
+			case "createdBy":
+				return ec.fieldContext_BaseInfo_createdBy(ctx, field)
+			case "createdTime":
+				return ec.fieldContext_BaseInfo_createdTime(ctx, field)
+			case "updatedTime":
+				return ec.fieldContext_BaseInfo_updatedTime(ctx, field)
+			case "updatedBy":
+				return ec.fieldContext_BaseInfo_updatedBy(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BaseInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ServerList_servers(ctx context.Context, field graphql.CollectedField, obj *model.ServerList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ServerList_servers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Servers, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Server)
+	fc.Result = res
+	return ec.marshalNServer2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ServerList_servers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ServerList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Server_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Server_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Server_description(ctx, field)
+			case "baseInfo":
+				return ec.fieldContext_Server_baseInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Server", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ServerList_total(ctx context.Context, field graphql.CollectedField, obj *model.ServerList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ServerList_total(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int32)
+	fc.Result = res
+	return ec.marshalNInt2int32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ServerList_total(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ServerList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ServerMutationPayload_success(ctx context.Context, field graphql.CollectedField, obj *model.ServerMutationPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ServerMutationPayload_success(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Success, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ServerMutationPayload_success(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ServerMutationPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ServerMutationPayload_message(ctx context.Context, field graphql.CollectedField, obj *model.ServerMutationPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ServerMutationPayload_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ServerMutationPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ServerMutationPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ServerMutationPayload_server(ctx context.Context, field graphql.CollectedField, obj *model.ServerMutationPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ServerMutationPayload_server(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Server, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Server)
+	fc.Result = res
+	return ec.marshalOServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ServerMutationPayload_server(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ServerMutationPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Server_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Server_name(ctx, field)
+			case "description":
+				return ec.fieldContext_Server_description(ctx, field)
+			case "baseInfo":
+				return ec.fieldContext_Server_baseInfo(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Server", field.Name)
 		},
 	}
 	return fc, nil
@@ -5323,6 +6142,40 @@ func (ec *executionContext) unmarshalInputCreateRoleInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateServerInput(ctx context.Context, obj any) (model.CreateServerInput, error) {
+	var it model.CreateServerInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "description"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, obj any) (model.CreateUserInput, error) {
 	var it model.CreateUserInput
 	asMap := map[string]any{}
@@ -5454,6 +6307,74 @@ func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, o
 				return it, err
 			}
 			it.Total = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputServerFilter(ctx context.Context, obj any) (model.ServerFilter, error) {
+	var it model.ServerFilter
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "description"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputServerInput(ctx context.Context, obj any) (model.ServerInput, error) {
+	var it model.ServerInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "description"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
 		}
 	}
 
@@ -5687,6 +6608,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createServer":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createServer(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5852,6 +6780,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "servers":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_servers(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "server":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_server(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -5951,6 +6923,141 @@ func (ec *executionContext) _RoleMutationPayload(ctx context.Context, sel ast.Se
 			out.Values[i] = ec._RoleMutationPayload_message(ctx, field, obj)
 		case "role":
 			out.Values[i] = ec._RoleMutationPayload_role(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var serverImplementors = []string{"Server"}
+
+func (ec *executionContext) _Server(ctx context.Context, sel ast.SelectionSet, obj *model.Server) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, serverImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Server")
+		case "id":
+			out.Values[i] = ec._Server_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Server_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "description":
+			out.Values[i] = ec._Server_description(ctx, field, obj)
+		case "baseInfo":
+			out.Values[i] = ec._Server_baseInfo(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var serverListImplementors = []string{"ServerList"}
+
+func (ec *executionContext) _ServerList(ctx context.Context, sel ast.SelectionSet, obj *model.ServerList) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, serverListImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ServerList")
+		case "servers":
+			out.Values[i] = ec._ServerList_servers(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._ServerList_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var serverMutationPayloadImplementors = []string{"ServerMutationPayload"}
+
+func (ec *executionContext) _ServerMutationPayload(ctx context.Context, sel ast.SelectionSet, obj *model.ServerMutationPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, serverMutationPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ServerMutationPayload")
+		case "success":
+			out.Values[i] = ec._ServerMutationPayload_success(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._ServerMutationPayload_message(ctx, field, obj)
+		case "server":
+			out.Values[i] = ec._ServerMutationPayload_server(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6471,6 +7578,11 @@ func (ec *executionContext) unmarshalNCreateRoleInput2demoᚑgraphqlᚋgraphᚋm
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateServerInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateServerInput(ctx context.Context, v any) (model.CreateServerInput, error) {
+	res, err := ec.unmarshalInputCreateServerInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateUserInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateUserInput(ctx context.Context, v any) (model.CreateUserInput, error) {
 	res, err := ec.unmarshalInputCreateUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6631,6 +7743,110 @@ func (ec *executionContext) marshalNRoleMutationPayload2ᚖdemoᚑgraphqlᚋgrap
 		return graphql.Null
 	}
 	return ec._RoleMutationPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNServer2demoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v model.Server) graphql.Marshaler {
+	return ec._Server(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNServer2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v []*model.Server) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v *model.Server) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Server(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNServerList2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx context.Context, sel ast.SelectionSet, v []*model.ServerList) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOServerList2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNServerMutationPayload2demoᚑgraphqlᚋgraphᚋmodelᚐServerMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.ServerMutationPayload) graphql.Marshaler {
+	return ec._ServerMutationPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNServerMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.ServerMutationPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ServerMutationPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
@@ -7165,6 +8381,28 @@ func (ec *executionContext) marshalORole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRol
 		return graphql.Null
 	}
 	return ec._Role(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v *model.Server) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Server(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOServerFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerFilter(ctx context.Context, v any) (*model.ServerFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputServerFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOServerList2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx context.Context, sel ast.SelectionSet, v *model.ServerList) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ServerList(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v any) ([]*string, error) {

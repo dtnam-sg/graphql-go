@@ -1,0 +1,41 @@
+type Server {
+  id: ID!
+  name: String!
+  description: String
+  baseInfo: BaseInfo
+}
+
+type ServerList {
+  servers: [Server]!
+  total: Int!
+}
+
+input ServerInput {
+  name: String!
+  description: String
+}
+
+input CreateServerInput {
+  name: String!
+  description: String
+}
+
+type ServerMutationPayload {
+  success: Boolean!
+  message: String
+  server: Server
+}
+
+input ServerFilter {
+  name: String
+  description: String
+}
+
+extend type Query {
+  servers(filter: ServerFilter, pagination: PaginationInput): [ServerList]!
+  server(id: ID!): Server!
+}
+
+extend type Mutation {
+  createServer(input: CreateServerInput!): ServerMutationPayload!
+}

@@ -8,6 +8,7 @@ import (
 	"context"
 	"crypto/rand"
 	"demo-graphql/graph"
+	"demo-graphql/graph/helper"
 	"demo-graphql/graph/model"
 	"fmt"
 	"log"
@@ -18,13 +19,13 @@ import (
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.UserMutationPayload, error) {
 	log.Printf("CreateUser: %v\n", input)
 	randID, _ := rand.Int(rand.Reader, big.NewInt(100))
-	roles, err := findRoles(input, r.roles)
+	roles, err := helper.FindRoles(input, r.roles)
 
 	if err != nil {
 		return nil, fmt.Errorf("error finding roles: %v", err)
 	}
 
-	functions, err := findFunctions(input, r.functions)
+	functions, err := helper.FindFunctions(input, r.functions)
 	if err != nil {
 		return nil, fmt.Errorf("error finding functions: %v", err)
 	}
@@ -35,7 +36,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 		Email:     input.Email,
 		Roles:     roles,
 		Functions: functions,
-		BaseInfo:  NewBaseInfoWithDefault(),
+		BaseInfo:  helper.NewBaseInfoWithDefault(),
 	}
 	r.users = append(r.users, user)
 	return &model.UserMutationPayload{
@@ -47,12 +48,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.CreateUserInput) (*model.UserMutationPayload, error) {
 	log.Printf("UpdateUser: %v\n", input)
-	roles, err := findRoles(input, r.roles)
+	roles, err := helper.FindRoles(input, r.roles)
 	if err != nil {
 		return nil, fmt.Errorf("error finding roles: %v", err)
 	}
 
-	functions, err := findFunctions(input, r.functions)
+	functions, err := helper.FindFunctions(input, r.functions)
 	if err != nil {
 		return nil, fmt.Errorf("error finding functions: %v", err)
 	}
@@ -168,7 +169,7 @@ func (r *queryResolver) Users(ctx context.Context, filter *model.UserFilter, pag
 
 	return &model.Users{
 		Users: filteredUsers,
-		Total: int32(len(filteredUsers))}, nil
+		Total: int32(len(r.users))}, nil
 }
 
 // User is the resolver for the user field.

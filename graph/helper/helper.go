@@ -1,4 +1,4 @@
-package resolver
+package helper
 
 import (
 	"demo-graphql/graph/model"
@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func findRoles(input model.CreateUserInput, roleList []*model.Role) ([]*model.Role, error) {
+func FindRoles(input model.CreateUserInput, roleList []*model.Role) ([]*model.Role, error) {
 	var roles []*model.Role
 	for _, roleID := range input.RoleIds {
 		if roleID == nil {
@@ -24,7 +24,7 @@ func findRoles(input model.CreateUserInput, roleList []*model.Role) ([]*model.Ro
 
 }
 
-func findFunctions(input model.CreateUserInput, functionList []*model.Function) ([]*model.Function, error) {
+func FindFunctions(input model.CreateUserInput, functionList []*model.Function) ([]*model.Function, error) {
 	var functions []*model.Function
 	if input.FunctionIds != nil {
 		for _, funcID := range input.FunctionIds {
