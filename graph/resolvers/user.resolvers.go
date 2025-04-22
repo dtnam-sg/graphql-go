@@ -7,10 +7,10 @@ package resolver
 import (
 	"context"
 	"crypto/rand"
-	"demo-graphql/graph"
-	"demo-graphql/graph/helper"
-	"demo-graphql/graph/model"
 	"fmt"
+	"graphql-demo/graph"
+	"graphql-demo/graph/helper"
+	"graphql-demo/graph/model"
 	"log"
 	"math/big"
 )

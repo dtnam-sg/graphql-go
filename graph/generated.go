@@ -5,7 +5,7 @@ package graph
 import (
 	"bytes"
 	"context"
-	"demo-graphql/graph/model"
+	"graphql-demo/graph/model"
 	"embed"
 	"errors"
 	"fmt"

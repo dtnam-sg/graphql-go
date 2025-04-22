@@ -6,8 +6,8 @@ package resolver
 
 import (
 	"context"
-	"demo-graphql/graph/model"
 	"fmt"
+	"graphql-demo/graph/model"
 )
 
 // CreateServer is the resolver for the createServer field.

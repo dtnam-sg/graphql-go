@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"demo-graphql/graph/model"
+	"graphql-demo/graph/model"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"

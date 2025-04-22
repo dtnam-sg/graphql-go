@@ -1,8 +1,8 @@
 package main
 
 import (
-	"demo-graphql/graph"
-	resolver "demo-graphql/graph/resolvers"
+	"graphql-demo/graph"
+	resolver "graphql-demo/graph/resolvers"
 	"log"
 	"net/http"
 	"os"

@@ -1,6 +1,6 @@
 package resolver
 
-import "demo-graphql/graph/model"
+import "graphql-demo/graph/model"
 
 // This file will not be regenerated automatically.
 //

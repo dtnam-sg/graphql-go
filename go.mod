@@ -1,4 +1,4 @@
-module demo-graphql
+module graphql-demo
 
 go 1.22.12
 
