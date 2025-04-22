@@ -5,10 +5,10 @@ package graph
 import (
 	"bytes"
 	"context"
-	"graphql-demo/graph/model"
 	"embed"
 	"errors"
 	"fmt"
+	"graphql-demo/graph/model"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -45,6 +45,8 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	Length        func(ctx context.Context, obj any, next graphql.Resolver, min int32, max *int32, message *string) (res any, err error)
+	ValidateEmail func(ctx context.Context, obj any, next graphql.Resolver, message *string) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -756,6 +758,108 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
+func (ec *executionContext) dir_length_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.dir_length_argsMin(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["min"] = arg0
+	arg1, err := ec.dir_length_argsMax(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["max"] = arg1
+	arg2, err := ec.dir_length_argsMessage(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["message"] = arg2
+	return args, nil
+}
+func (ec *executionContext) dir_length_argsMin(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (int32, error) {
+	if _, ok := rawArgs["min"]; !ok {
+		var zeroVal int32
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("min"))
+	if tmp, ok := rawArgs["min"]; ok {
+		return ec.unmarshalNInt2int32(ctx, tmp)
+	}
+
+	var zeroVal int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) dir_length_argsMax(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*int32, error) {
+	if _, ok := rawArgs["max"]; !ok {
+		var zeroVal *int32
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("max"))
+	if tmp, ok := rawArgs["max"]; ok {
+		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+	}
+
+	var zeroVal *int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) dir_length_argsMessage(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*string, error) {
+	if _, ok := rawArgs["message"]; !ok {
+		var zeroVal *string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
+	if tmp, ok := rawArgs["message"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) dir_validateEmail_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.dir_validateEmail_argsMessage(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["message"] = arg0
+	return args, nil
+}
+func (ec *executionContext) dir_validateEmail_argsMessage(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*string, error) {
+	if _, ok := rawArgs["message"]; !ok {
+		var zeroVal *string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
+	if tmp, ok := rawArgs["message"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_createRole_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -772,7 +876,7 @@ func (ec *executionContext) field_Mutation_createRole_argsInput(
 ) (model.CreateRoleInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateRoleInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateRoleInput(ctx, tmp)
+		return ec.unmarshalNCreateRoleInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateRoleInput(ctx, tmp)
 	}
 
 	var zeroVal model.CreateRoleInput
@@ -795,7 +899,7 @@ func (ec *executionContext) field_Mutation_createServer_argsInput(
 ) (model.CreateServerInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateServerInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateServerInput(ctx, tmp)
+		return ec.unmarshalNCreateServerInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateServerInput(ctx, tmp)
 	}
 
 	var zeroVal model.CreateServerInput
@@ -818,7 +922,7 @@ func (ec *executionContext) field_Mutation_createUser_argsInput(
 ) (model.CreateUserInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateUserInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateUserInput(ctx, tmp)
+		return ec.unmarshalNCreateUserInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateUserInput(ctx, tmp)
 	}
 
 	var zeroVal model.CreateUserInput
@@ -887,7 +991,7 @@ func (ec *executionContext) field_Mutation_inviteUser_argsInput(
 ) (model.InviteUserInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNInviteUserInput2demoᚑgraphqlᚋgraphᚋmodelᚐInviteUserInput(ctx, tmp)
+		return ec.unmarshalNInviteUserInput2graphqlᚑdemoᚋgraphᚋmodelᚐInviteUserInput(ctx, tmp)
 	}
 
 	var zeroVal model.InviteUserInput
@@ -928,7 +1032,7 @@ func (ec *executionContext) field_Mutation_updateRole_argsInput(
 ) (model.CreateRoleInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateRoleInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateRoleInput(ctx, tmp)
+		return ec.unmarshalNCreateRoleInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateRoleInput(ctx, tmp)
 	}
 
 	var zeroVal model.CreateRoleInput
@@ -969,7 +1073,7 @@ func (ec *executionContext) field_Mutation_updateUser_argsInput(
 ) (model.CreateUserInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNCreateUserInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateUserInput(ctx, tmp)
+		return ec.unmarshalNCreateUserInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateUserInput(ctx, tmp)
 	}
 
 	var zeroVal model.CreateUserInput
@@ -1043,7 +1147,7 @@ func (ec *executionContext) field_Query_functions_argsFilter(
 ) (*model.UserFilter, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOUserFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
+		return ec.unmarshalOUserFilter2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
 	}
 
 	var zeroVal *model.UserFilter
@@ -1056,7 +1160,7 @@ func (ec *executionContext) field_Query_functions_argsPagination(
 ) (*model.PaginationInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
 	if tmp, ok := rawArgs["pagination"]; ok {
-		return ec.unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
+		return ec.unmarshalOPaginationInput2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
 	}
 
 	var zeroVal *model.PaginationInput
@@ -1107,7 +1211,7 @@ func (ec *executionContext) field_Query_roles_argsFilter(
 ) (*model.UserFilter, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOUserFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
+		return ec.unmarshalOUserFilter2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
 	}
 
 	var zeroVal *model.UserFilter
@@ -1120,7 +1224,7 @@ func (ec *executionContext) field_Query_roles_argsPagination(
 ) (*model.PaginationInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
 	if tmp, ok := rawArgs["pagination"]; ok {
-		return ec.unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
+		return ec.unmarshalOPaginationInput2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
 	}
 
 	var zeroVal *model.PaginationInput
@@ -1171,7 +1275,7 @@ func (ec *executionContext) field_Query_servers_argsFilter(
 ) (*model.ServerFilter, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOServerFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerFilter(ctx, tmp)
+		return ec.unmarshalOServerFilter2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerFilter(ctx, tmp)
 	}
 
 	var zeroVal *model.ServerFilter
@@ -1184,7 +1288,7 @@ func (ec *executionContext) field_Query_servers_argsPagination(
 ) (*model.PaginationInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
 	if tmp, ok := rawArgs["pagination"]; ok {
-		return ec.unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
+		return ec.unmarshalOPaginationInput2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
 	}
 
 	var zeroVal *model.PaginationInput
@@ -1235,7 +1339,7 @@ func (ec *executionContext) field_Query_users_argsFilter(
 ) (*model.UserFilter, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 	if tmp, ok := rawArgs["filter"]; ok {
-		return ec.unmarshalOUserFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
+		return ec.unmarshalOUserFilter2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
 	}
 
 	var zeroVal *model.UserFilter
@@ -1248,7 +1352,7 @@ func (ec *executionContext) field_Query_users_argsPagination(
 ) (*model.PaginationInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
 	if tmp, ok := rawArgs["pagination"]; ok {
-		return ec.unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
+		return ec.unmarshalOPaginationInput2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐPaginationInput(ctx, tmp)
 	}
 
 	var zeroVal *model.PaginationInput
@@ -1732,7 +1836,7 @@ func (ec *executionContext) _Function_baseInfo(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.BaseInfo)
 	fc.Result = res
-	return ec.marshalOBaseInfo2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
+	return ec.marshalOBaseInfo2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Function_baseInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1788,7 +1892,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.UserMutationPayload)
 	fc.Result = res
-	return ec.marshalNUserMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNUserMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1851,7 +1955,7 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.UserMutationPayload)
 	fc.Result = res
-	return ec.marshalNUserMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNUserMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1969,7 +2073,7 @@ func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.UserMutationPayload)
 	fc.Result = res
-	return ec.marshalNUserMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNUserMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2032,7 +2136,7 @@ func (ec *executionContext) _Mutation_createRole(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.RoleMutationPayload)
 	fc.Result = res
-	return ec.marshalNRoleMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRoleMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNRoleMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRoleMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2095,7 +2199,7 @@ func (ec *executionContext) _Mutation_updateRole(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.RoleMutationPayload)
 	fc.Result = res
-	return ec.marshalNRoleMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRoleMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNRoleMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRoleMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2158,7 +2262,7 @@ func (ec *executionContext) _Mutation_deleteRole(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.RoleMutationPayload)
 	fc.Result = res
-	return ec.marshalNRoleMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRoleMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNRoleMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRoleMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2221,7 +2325,7 @@ func (ec *executionContext) _Mutation_createServer(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.ServerMutationPayload)
 	fc.Result = res
-	return ec.marshalNServerMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerMutationPayload(ctx, field.Selections, res)
+	return ec.marshalNServerMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerMutationPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createServer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2284,7 +2388,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.Users)
 	fc.Result = res
-	return ec.marshalNUsers2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUsers(ctx, field.Selections, res)
+	return ec.marshalNUsers2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUsers(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2342,7 +2446,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2411,7 +2515,7 @@ func (ec *executionContext) _Query_roles(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.Role)
 	fc.Result = res
-	return ec.marshalNRole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRoleᚄ(ctx, field.Selections, res)
+	return ec.marshalNRole2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRoleᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_roles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2473,7 +2577,7 @@ func (ec *executionContext) _Query_role(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.Role)
 	fc.Result = res
-	return ec.marshalORole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
+	return ec.marshalORole2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_role(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2538,7 +2642,7 @@ func (ec *executionContext) _Query_functions(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Function)
 	fc.Result = res
-	return ec.marshalNFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunctionᚄ(ctx, field.Selections, res)
+	return ec.marshalNFunction2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunctionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_functions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2600,7 +2704,7 @@ func (ec *executionContext) _Query_function(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Function)
 	fc.Result = res
-	return ec.marshalOFunction2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx, field.Selections, res)
+	return ec.marshalOFunction2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_function(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2665,7 +2769,7 @@ func (ec *executionContext) _Query_servers(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.([]*model.ServerList)
 	fc.Result = res
-	return ec.marshalNServerList2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx, field.Selections, res)
+	return ec.marshalNServerList2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerList(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_servers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2726,7 +2830,7 @@ func (ec *executionContext) _Query_server(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Server)
 	fc.Result = res
-	return ec.marshalNServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
+	return ec.marshalNServer2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_server(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3048,7 +3152,7 @@ func (ec *executionContext) _Role_baseInfo(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.BaseInfo)
 	fc.Result = res
-	return ec.marshalOBaseInfo2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
+	return ec.marshalOBaseInfo2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Role_baseInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3186,7 +3290,7 @@ func (ec *executionContext) _RoleMutationPayload_role(ctx context.Context, field
 	}
 	res := resTmp.(*model.Role)
 	fc.Result = res
-	return ec.marshalORole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
+	return ec.marshalORole2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_RoleMutationPayload_role(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3366,7 +3470,7 @@ func (ec *executionContext) _Server_baseInfo(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.BaseInfo)
 	fc.Result = res
-	return ec.marshalOBaseInfo2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
+	return ec.marshalOBaseInfo2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Server_baseInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3422,7 +3526,7 @@ func (ec *executionContext) _ServerList_servers(ctx context.Context, field graph
 	}
 	res := resTmp.([]*model.Server)
 	fc.Result = res
-	return ec.marshalNServer2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
+	return ec.marshalNServer2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ServerList_servers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3602,7 +3706,7 @@ func (ec *executionContext) _ServerMutationPayload_server(ctx context.Context, f
 	}
 	res := resTmp.(*model.Server)
 	fc.Result = res
-	return ec.marshalOServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
+	return ec.marshalOServer2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ServerMutationPayload_server(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3785,7 +3889,7 @@ func (ec *executionContext) _User_roles(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.([]*model.Role)
 	fc.Result = res
-	return ec.marshalORole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
+	return ec.marshalORole2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_roles(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3836,7 +3940,7 @@ func (ec *executionContext) _User_functions(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Function)
 	fc.Result = res
-	return ec.marshalOFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx, field.Selections, res)
+	return ec.marshalOFunction2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_functions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3887,7 +3991,7 @@ func (ec *executionContext) _User_baseInfo(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.BaseInfo)
 	fc.Result = res
-	return ec.marshalOBaseInfo2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
+	return ec.marshalOBaseInfo2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐBaseInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_baseInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4025,7 +4129,7 @@ func (ec *executionContext) _UserMutationPayload_user(ctx context.Context, field
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserMutationPayload_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4083,7 +4187,7 @@ func (ec *executionContext) _Users_users(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Users_users(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6192,18 +6296,68 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 		switch k {
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
+			directive0 := func(ctx context.Context) (any, error) { return ec.unmarshalNString2string(ctx, v) }
+
+			directive1 := func(ctx context.Context) (any, error) {
+				min, err := ec.unmarshalNInt2int32(ctx, 2)
+				if err != nil {
+					var zeroVal string
+					return zeroVal, err
+				}
+				max, err := ec.unmarshalOInt2ᚖint32(ctx, 50)
+				if err != nil {
+					var zeroVal string
+					return zeroVal, err
+				}
+				message, err := ec.unmarshalOString2ᚖstring(ctx, "Name must be between 1 and 50 characters")
+				if err != nil {
+					var zeroVal string
+					return zeroVal, err
+				}
+				if ec.directives.Length == nil {
+					var zeroVal string
+					return zeroVal, errors.New("directive length is not implemented")
+				}
+				return ec.directives.Length(ctx, obj, directive0, min, max, message)
 			}
-			it.Name = data
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Name = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
 		case "email":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
+			directive0 := func(ctx context.Context) (any, error) { return ec.unmarshalNString2string(ctx, v) }
+
+			directive1 := func(ctx context.Context) (any, error) {
+				message, err := ec.unmarshalOString2ᚖstring(ctx, "invalid email format")
+				if err != nil {
+					var zeroVal string
+					return zeroVal, err
+				}
+				if ec.directives.ValidateEmail == nil {
+					var zeroVal string
+					return zeroVal, errors.New("directive validateEmail is not implemented")
+				}
+				return ec.directives.ValidateEmail(ctx, obj, directive0, message)
 			}
-			it.Email = data
+
+			tmp, err := directive1(ctx)
+			if err != nil {
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
+			if data, ok := tmp.(string); ok {
+				it.Email = data
+			} else {
+				err := fmt.Errorf(`unexpected type %T from directive, should be string`, tmp)
+				return it, graphql.ErrorOnPath(ctx, err)
+			}
 		case "roleIds":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIds"))
 			data, err := ec.unmarshalOString2ᚕᚖstring(ctx, v)
@@ -7573,22 +7727,22 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreateRoleInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateRoleInput(ctx context.Context, v any) (model.CreateRoleInput, error) {
+func (ec *executionContext) unmarshalNCreateRoleInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateRoleInput(ctx context.Context, v any) (model.CreateRoleInput, error) {
 	res, err := ec.unmarshalInputCreateRoleInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateServerInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateServerInput(ctx context.Context, v any) (model.CreateServerInput, error) {
+func (ec *executionContext) unmarshalNCreateServerInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateServerInput(ctx context.Context, v any) (model.CreateServerInput, error) {
 	res, err := ec.unmarshalInputCreateServerInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateUserInput2demoᚑgraphqlᚋgraphᚋmodelᚐCreateUserInput(ctx context.Context, v any) (model.CreateUserInput, error) {
+func (ec *executionContext) unmarshalNCreateUserInput2graphqlᚑdemoᚋgraphᚋmodelᚐCreateUserInput(ctx context.Context, v any) (model.CreateUserInput, error) {
 	res, err := ec.unmarshalInputCreateUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunctionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Function) graphql.Marshaler {
+func (ec *executionContext) marshalNFunction2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunctionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Function) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7612,7 +7766,7 @@ func (ec *executionContext) marshalNFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmode
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNFunction2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx, sel, v[i])
+			ret[i] = ec.marshalNFunction2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7632,7 +7786,7 @@ func (ec *executionContext) marshalNFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmode
 	return ret
 }
 
-func (ec *executionContext) marshalNFunction2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx context.Context, sel ast.SelectionSet, v *model.Function) graphql.Marshaler {
+func (ec *executionContext) marshalNFunction2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx context.Context, sel ast.SelectionSet, v *model.Function) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7672,12 +7826,12 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNInviteUserInput2demoᚑgraphqlᚋgraphᚋmodelᚐInviteUserInput(ctx context.Context, v any) (model.InviteUserInput, error) {
+func (ec *executionContext) unmarshalNInviteUserInput2graphqlᚑdemoᚋgraphᚋmodelᚐInviteUserInput(ctx context.Context, v any) (model.InviteUserInput, error) {
 	res, err := ec.unmarshalInputInviteUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNRole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRoleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalNRole2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRoleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Role) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7701,7 +7855,7 @@ func (ec *executionContext) marshalNRole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNRole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx, sel, v[i])
+			ret[i] = ec.marshalNRole2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7721,7 +7875,7 @@ func (ec *executionContext) marshalNRole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐ
 	return ret
 }
 
-func (ec *executionContext) marshalNRole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalNRole2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7731,11 +7885,11 @@ func (ec *executionContext) marshalNRole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRol
 	return ec._Role(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNRoleMutationPayload2demoᚑgraphqlᚋgraphᚋmodelᚐRoleMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.RoleMutationPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNRoleMutationPayload2graphqlᚑdemoᚋgraphᚋmodelᚐRoleMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.RoleMutationPayload) graphql.Marshaler {
 	return ec._RoleMutationPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNRoleMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRoleMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.RoleMutationPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNRoleMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRoleMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.RoleMutationPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7745,11 +7899,11 @@ func (ec *executionContext) marshalNRoleMutationPayload2ᚖdemoᚑgraphqlᚋgrap
 	return ec._RoleMutationPayload(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNServer2demoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v model.Server) graphql.Marshaler {
+func (ec *executionContext) marshalNServer2graphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v model.Server) graphql.Marshaler {
 	return ec._Server(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNServer2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v []*model.Server) graphql.Marshaler {
+func (ec *executionContext) marshalNServer2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v []*model.Server) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7773,7 +7927,7 @@ func (ec *executionContext) marshalNServer2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodel�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx, sel, v[i])
+			ret[i] = ec.marshalOServer2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7787,7 +7941,7 @@ func (ec *executionContext) marshalNServer2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodel�
 	return ret
 }
 
-func (ec *executionContext) marshalNServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v *model.Server) graphql.Marshaler {
+func (ec *executionContext) marshalNServer2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v *model.Server) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7797,7 +7951,7 @@ func (ec *executionContext) marshalNServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐS
 	return ec._Server(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNServerList2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx context.Context, sel ast.SelectionSet, v []*model.ServerList) graphql.Marshaler {
+func (ec *executionContext) marshalNServerList2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerList(ctx context.Context, sel ast.SelectionSet, v []*model.ServerList) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7821,7 +7975,7 @@ func (ec *executionContext) marshalNServerList2ᚕᚖdemoᚑgraphqlᚋgraphᚋmo
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOServerList2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx, sel, v[i])
+			ret[i] = ec.marshalOServerList2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerList(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7835,11 +7989,11 @@ func (ec *executionContext) marshalNServerList2ᚕᚖdemoᚑgraphqlᚋgraphᚋmo
 	return ret
 }
 
-func (ec *executionContext) marshalNServerMutationPayload2demoᚑgraphqlᚋgraphᚋmodelᚐServerMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.ServerMutationPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNServerMutationPayload2graphqlᚑdemoᚋgraphᚋmodelᚐServerMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.ServerMutationPayload) graphql.Marshaler {
 	return ec._ServerMutationPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNServerMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.ServerMutationPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNServerMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.ServerMutationPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7879,7 +8033,7 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalNUser2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.User) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -7903,7 +8057,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNUser2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUser(ctx, sel, v[i])
+			ret[i] = ec.marshalNUser2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUser(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7923,7 +8077,7 @@ func (ec *executionContext) marshalNUser2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐ
 	return ret
 }
 
-func (ec *executionContext) marshalNUser2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7933,11 +8087,11 @@ func (ec *executionContext) marshalNUser2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUse
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUserMutationPayload2demoᚑgraphqlᚋgraphᚋmodelᚐUserMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.UserMutationPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNUserMutationPayload2graphqlᚑdemoᚋgraphᚋmodelᚐUserMutationPayload(ctx context.Context, sel ast.SelectionSet, v model.UserMutationPayload) graphql.Marshaler {
 	return ec._UserMutationPayload(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserMutationPayload2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.UserMutationPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNUserMutationPayload2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserMutationPayload(ctx context.Context, sel ast.SelectionSet, v *model.UserMutationPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7947,11 +8101,11 @@ func (ec *executionContext) marshalNUserMutationPayload2ᚖdemoᚑgraphqlᚋgrap
 	return ec._UserMutationPayload(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUsers2demoᚑgraphqlᚋgraphᚋmodelᚐUsers(ctx context.Context, sel ast.SelectionSet, v model.Users) graphql.Marshaler {
+func (ec *executionContext) marshalNUsers2graphqlᚑdemoᚋgraphᚋmodelᚐUsers(ctx context.Context, sel ast.SelectionSet, v model.Users) graphql.Marshaler {
 	return ec._Users(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUsers2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUsers(ctx context.Context, sel ast.SelectionSet, v *model.Users) graphql.Marshaler {
+func (ec *executionContext) marshalNUsers2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUsers(ctx context.Context, sel ast.SelectionSet, v *model.Users) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8214,7 +8368,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) marshalOBaseInfo2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐBaseInfo(ctx context.Context, sel ast.SelectionSet, v *model.BaseInfo) graphql.Marshaler {
+func (ec *executionContext) marshalOBaseInfo2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐBaseInfo(ctx context.Context, sel ast.SelectionSet, v *model.BaseInfo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8247,7 +8401,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx context.Context, sel ast.SelectionSet, v []*model.Function) graphql.Marshaler {
+func (ec *executionContext) marshalOFunction2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx context.Context, sel ast.SelectionSet, v []*model.Function) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8274,7 +8428,7 @@ func (ec *executionContext) marshalOFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmode
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOFunction2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx, sel, v[i])
+			ret[i] = ec.marshalOFunction2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8288,7 +8442,7 @@ func (ec *executionContext) marshalOFunction2ᚕᚖdemoᚑgraphqlᚋgraphᚋmode
 	return ret
 }
 
-func (ec *executionContext) marshalOFunction2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐFunction(ctx context.Context, sel ast.SelectionSet, v *model.Function) graphql.Marshaler {
+func (ec *executionContext) marshalOFunction2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐFunction(ctx context.Context, sel ast.SelectionSet, v *model.Function) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8327,7 +8481,7 @@ func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐPaginationInput(ctx context.Context, v any) (*model.PaginationInput, error) {
+func (ec *executionContext) unmarshalOPaginationInput2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐPaginationInput(ctx context.Context, v any) (*model.PaginationInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8335,7 +8489,7 @@ func (ec *executionContext) unmarshalOPaginationInput2ᚖdemoᚑgraphqlᚋgraph�
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalORole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v []*model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalORole2ᚕᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v []*model.Role) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8362,7 +8516,7 @@ func (ec *executionContext) marshalORole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalORole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx, sel, v[i])
+			ret[i] = ec.marshalORole2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8376,21 +8530,21 @@ func (ec *executionContext) marshalORole2ᚕᚖdemoᚑgraphqlᚋgraphᚋmodelᚐ
 	return ret
 }
 
-func (ec *executionContext) marshalORole2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
+func (ec *executionContext) marshalORole2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Role(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOServer2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v *model.Server) graphql.Marshaler {
+func (ec *executionContext) marshalOServer2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServer(ctx context.Context, sel ast.SelectionSet, v *model.Server) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Server(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOServerFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerFilter(ctx context.Context, v any) (*model.ServerFilter, error) {
+func (ec *executionContext) unmarshalOServerFilter2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerFilter(ctx context.Context, v any) (*model.ServerFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8398,7 +8552,7 @@ func (ec *executionContext) unmarshalOServerFilter2ᚖdemoᚑgraphqlᚋgraphᚋm
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOServerList2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐServerList(ctx context.Context, sel ast.SelectionSet, v *model.ServerList) graphql.Marshaler {
+func (ec *executionContext) marshalOServerList2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐServerList(ctx context.Context, sel ast.SelectionSet, v *model.ServerList) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -8453,14 +8607,14 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalOUser2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOUserFilter2ᚖdemoᚑgraphqlᚋgraphᚋmodelᚐUserFilter(ctx context.Context, v any) (*model.UserFilter, error) {
+func (ec *executionContext) unmarshalOUserFilter2ᚖgraphqlᚑdemoᚋgraphᚋmodelᚐUserFilter(ctx context.Context, v any) (*model.UserFilter, error) {
 	if v == nil {
 		return nil, nil
 	}

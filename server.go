@@ -2,6 +2,7 @@ package main
 
 import (
 	"graphql-demo/graph"
+	"graphql-demo/graph/directive"
 	resolver "graphql-demo/graph/resolvers"
 	"log"
 	"net/http"
@@ -23,7 +24,18 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &resolver.Resolver{}}))
+	//config
+	config := graph.Config{
+		Resolvers: &resolver.Resolver{},
+	}
+
+	//directives
+	config.Directives = graph.DirectiveRoot{
+		ValidateEmail: directive.ValidateEmail,
+		Length:        directive.Length,
+	}
+
+	srv := handler.New(graph.NewExecutableSchema(config))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})

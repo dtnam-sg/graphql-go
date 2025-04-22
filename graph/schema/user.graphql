@@ -1,3 +1,6 @@
+directive @length(min: Int!, max: Int, message: String) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+directive @validateEmail(message: String = "invalid email format") on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
 type User {
   id: ID!
   name: String!
@@ -19,8 +22,8 @@ input PaginationInput {
 }
 
 input CreateUserInput {
-  name: String!
-  email: String!
+  name: String! @length(min: 2, max: 50, message: "Name must be between 1 and 50 characters")
+  email: String! @validateEmail
   roleIds: [String]
   functionIds: [String]
 }
